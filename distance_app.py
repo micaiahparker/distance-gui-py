@@ -8,7 +8,10 @@ def make_url(origin, dest, mode='driving', lang='en-EN', units='imperial'):
 
 def get_dist_data(origin, dest,mode='driving', lang='en-EN', units='imperial'):
 	data = get_json_data(origin, dest, mode, lang, units)
-	return data['rows'][0]['elements'][0]['distance']['text'].split()[0]
+	try:
+		return data['rows'][0]['elements'][0]['distance']['text'].split()[0]
+	except:
+		pass None
 
 
 def get_json_data(origin, dest,mode='driving', lang='en-EN', units='imperial'):
@@ -36,6 +39,8 @@ def get_total_distance(origin, destinations, file=None):
 	distance = 0
 	for address in destinations:
 		current_dist = get_dist_data(origin, address)
+		if current_dist = None:
+			return None
 		distance += float(current_dist)
 		if file:
 			file.write('{}: {}\n'.format(address, current_dist))
@@ -50,7 +55,9 @@ def main():
 			if not filename:
 				filename = 'default_log.txt'
 			logfile = open(filename, 'at')
-		total_distance = get_total_distance(base_address, other_addresses, logfile)
+			total_distance = get_total_distance(base_address, other_addresses, logfile)
+		else:
+			total_distance = get_total_distance(base_address, other_addresses)
 		if logfile:
 			logfile.close()
 		if total_distance:
