@@ -32,20 +32,27 @@ def get_file_data(filename=None):
 	else:
 		return None
 	
-def get_total_distance(origin, destinations, debug=False):
+def get_total_distance(origin, destinations, file=None):
 	distance = 0
 	for address in destinations:
 		current_dist = get_dist_data(origin, address)
 		distance += float(current_dist)
-		if debug:
-			print('{}: {}'.format(address, current_dist))
+		if file:
+			file.write('{}: {}\n'.format(address, current_dist))
 	return distance
 		
 def main():
 	base_address = easygui.enterbox(msg='Main Address: ')
 	other_addresses = get_file_data()
 	if other_addresses:
-		total_distance = get_total_distance(base_address, other_addresses, True)
+		if easygui.ynbox('Do you want to log data? '):
+			filename = easygui.enterbox(msg='Enter Filename',title='Log File Name')
+			if not filename:
+				filename = 'default_log.txt'
+			logfile = open(filename, 'at')
+		total_distance = get_total_distance(base_address, other_addresses, logfile)
+		if logfile:
+			logfile.close()
 		if total_distance:
 			msg = '{} miles'.format(total_distance)
 			easygui.msgbox(msg)
