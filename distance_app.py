@@ -11,7 +11,7 @@ def get_dist_data(origin, dest,mode='driving', lang='en-EN', units='imperial'):
 	try:
 		return data['rows'][0]['elements'][0]['distance']['text'].split()[0]
 	except:
-		pass None
+		return None
 
 
 def get_json_data(origin, dest,mode='driving', lang='en-EN', units='imperial'):
@@ -39,7 +39,7 @@ def get_total_distance(origin, destinations, file=None):
 	distance = 0
 	for address in destinations:
 		current_dist = get_dist_data(origin, address)
-		if current_dist = None:
+		if current_dist == None:
 			return None
 		distance += float(current_dist)
 		if file:
