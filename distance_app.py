@@ -1,4 +1,5 @@
 import easygui
+from time import sleep
 from requests import get
 
 def make_url(origin, dest, mode='driving', lang='en-EN', units='imperial'):
@@ -20,7 +21,7 @@ def get_json_data(origin, dest,mode='driving', lang='en-EN', units='imperial'):
 	
 
 def get_file_loc():
-	return easygui.fileopenbox(title="Select Address File", filetypes=['*.txt'])
+	return easygui.fileopenbox(title='Distance Calculator',msg="Select Address File", filetypes=['*.txt'])
 	
 
 def get_file_data(filename=None):
@@ -37,29 +38,29 @@ def get_file_data(filename=None):
 	
 def get_total_distance(origin, destinations, file=None):
 	distance = 0
-	for address in destinations:
-		current_dist = get_dist_data(origin, address)
+	for address in range(len(destinations)):
+		current_dist = get_dist_data(origin, destinations[address])
 		if current_dist == None:
 			return None
-		distance += float(current_dist)
+		distance += float(current_dist.replace(',',''))
 		if file:
-			file.write('{}: {}\n'.format(address, current_dist))
+			file.write('{}: {}\n'.format(destinations[address], current_dist))
+		if address % 10 == 0:
+			sleep(1)
 	return distance
 		
 def main():
-	base_address = easygui.enterbox(msg='Main Address: ')
+	base_address = easygui.enterbox(title='Distance Calculator', msg='Main Address: ')
 	other_addresses = get_file_data()
 	if other_addresses:
 		if easygui.ynbox('Do you want to log data? '):
-			filename = easygui.enterbox(msg='Enter Filename',title='Log File Name')
-			if not filename:
-				filename = 'default_log.txt'
-			logfile = open(filename, 'at')
+			logfile = open('..\\logs\\dist_log.txt', 'at')
+			logfile.write('From: {}\n'.format(base_address))
 			total_distance = get_total_distance(base_address, other_addresses, logfile)
+			logfile.write('Total: {}\n\n'.format(total_distance))
+			logfile.close()
 		else:
 			total_distance = get_total_distance(base_address, other_addresses)
-		if logfile:
-			logfile.close()
 		if total_distance:
 			msg = '{} miles'.format(total_distance)
 			easygui.msgbox(msg)
@@ -69,7 +70,9 @@ def main():
 		easygui.msgbox('Error with Address File')
 		
 if __name__ in '__main__':
+	easygui.msgbox('Distance Calculator by Micaiah Parker')
 	main()
+
 
 	
 	
